@@ -20,10 +20,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-
       background:
         radial-gradient(circle at top, #24263d 0%, #101116 45%, #08090c 100%);
-
       color: white;
       font-family: Arial, Helvetica, sans-serif;
     }
@@ -31,18 +29,12 @@
     .card {
       width: 420px;
       max-width: calc(100% - 32px);
-
       padding: 42px;
-
-      background: rgba(20, 21, 29, 0.92);
-
+      background: rgba(20, 21, 29, 0.94);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 18px;
-
       text-align: center;
-
-      box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
     }
 
     .logo {
@@ -63,17 +55,12 @@
 
     button {
       width: 100%;
-
       padding: 14px 20px;
-
       border: none;
       border-radius: 10px;
-
       font-size: 16px;
       font-weight: bold;
-
       cursor: pointer;
-
       transition: 0.2s;
     }
 
@@ -89,7 +76,6 @@
 
     #logoutButton {
       margin-top: 12px;
-
       background: #2b2d35;
       color: white;
     }
@@ -100,38 +86,29 @@
 
     #status {
       margin-top: 25px;
-
       padding: 14px;
-
       border-radius: 10px;
-
       display: none;
-
       line-height: 1.5;
     }
 
     .loading {
       display: block !important;
-
       background: rgba(88, 101, 242, 0.12);
       color: #aeb5ff;
     }
 
     .success {
       display: block !important;
-
       background: rgba(46, 204, 113, 0.12);
       color: #65e89d;
-
       border: 1px solid rgba(46, 204, 113, 0.25);
     }
 
     .error {
       display: block !important;
-
       background: rgba(231, 76, 60, 0.12);
       color: #ff8174;
-
       border: 1px solid rgba(231, 76, 60, 0.25);
     }
 
@@ -160,48 +137,32 @@
     </p>
 
     <div id="loginArea">
-
       <button id="loginButton">
         Mit Discord anmelden
       </button>
-
     </div>
 
     <div id="userArea">
-
       <div class="username" id="username"></div>
 
       <button id="logoutButton">
         Abmelden
       </button>
-
     </div>
 
     <div id="status"></div>
 
   </div>
 
-
   <script>
 
-    // --------------------------------------------------
-    // SUPABASE
-    // --------------------------------------------------
+    // SUPABASE KONFIGURATION
 
     const SUPABASE_URL =
       "https://hpdhtwokqrfdficbgbqu.supabase.co";
 
-    /*
-      Hier gehört gleich dein Supabase Publishable Key hinein.
-      NIEMALS:
-      - Discord Bot Token
-      - Discord Client Secret
-      - Supabase Secret Key
-    */
-
     const SUPABASE_KEY =
-      "DEIN_SUPABASE_PUBLISHABLE_KEY";
-
+      "sb_publishable_3mGrmYa7hDk0yZPQCNojEA_YFHvBdxQ";
 
     const supabaseClient =
       window.supabase.createClient(
@@ -210,9 +171,7 @@
       );
 
 
-    // --------------------------------------------------
     // ELEMENTE
-    // --------------------------------------------------
 
     const loginArea =
       document.getElementById("loginArea");
@@ -233,22 +192,17 @@
       document.getElementById("status");
 
 
-    // --------------------------------------------------
-    // STATUS
-    // --------------------------------------------------
+    // STATUS ANZEIGEN
 
     function showStatus(message, type) {
 
       statusBox.textContent = message;
-
       statusBox.className = type;
 
     }
 
 
-    // --------------------------------------------------
     // DISCORD LOGIN
-    // --------------------------------------------------
 
     loginButton.addEventListener(
       "click",
@@ -290,9 +244,7 @@
     );
 
 
-    // --------------------------------------------------
     // LOGOUT
-    // --------------------------------------------------
 
     logoutButton.addEventListener(
       "click",
@@ -306,9 +258,7 @@
     );
 
 
-    // --------------------------------------------------
-    // ROLLE PRÜFEN
-    // --------------------------------------------------
+    // DISCORD ROLLE PRÜFEN
 
     async function checkDiscordRole(session) {
 
@@ -316,7 +266,6 @@
         "WT Panel Rolle wird geprüft ...",
         "loading"
       );
-
 
       try {
 
@@ -356,11 +305,6 @@
             "success"
           );
 
-          /*
-            Später kommt hier unser richtiges
-            Dashboard hin.
-          */
-
         }
 
         else {
@@ -388,9 +332,7 @@
     }
 
 
-    // --------------------------------------------------
-    // SESSION PRÜFEN
-    // --------------------------------------------------
+    // LOGIN SESSION PRÜFEN
 
     async function initialize() {
 
@@ -402,26 +344,19 @@
 
       if (!session) {
 
-        loginArea.style.display =
-          "block";
-
-        userArea.style.display =
-          "none";
+        loginArea.style.display = "block";
+        userArea.style.display = "none";
 
         return;
 
       }
 
 
-      loginArea.style.display =
-        "none";
-
-      userArea.style.display =
-        "block";
+      loginArea.style.display = "none";
+      userArea.style.display = "block";
 
 
-      const user =
-        session.user;
+      const user = session.user;
 
 
       username.textContent =
@@ -439,9 +374,7 @@
     }
 
 
-    // --------------------------------------------------
     // START
-    // --------------------------------------------------
 
     initialize();
 
