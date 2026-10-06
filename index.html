@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>WitchTown Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+        radial-gradient(circle at top, #24263d 0%, #101116 45%, #08090c 100%);
+
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .card {
+      width: 420px;
+      max-width: calc(100% - 32px);
+
+      padding: 42px;
+
+      background: rgba(20, 21, 29, 0.92);
+
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+
+      text-align: center;
+
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #9da0ad;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    button {
+      width: 100%;
+
+      padding: 14px 20px;
+
+      border: none;
+      border-radius: 10px;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+    #loginButton {
+      background: #5865f2;
+      color: white;
+    }
+
+    #loginButton:hover {
+      background: #4752c4;
+      transform: translateY(-1px);
+    }
+
+    #logoutButton {
+      margin-top: 12px;
+
+      background: #2b2d35;
+      color: white;
+    }
+
+    #logoutButton:hover {
+      background: #383b45;
+    }
+
+    #status {
+      margin-top: 25px;
+
+      padding: 14px;
+
+      border-radius: 10px;
+
+      display: none;
+
+      line-height: 1.5;
+    }
+
+    .loading {
+      display: block !important;
+
+      background: rgba(88, 101, 242, 0.12);
+      color: #aeb5ff;
+    }
+
+    .success {
+      display: block !important;
+
+      background: rgba(46, 204, 113, 0.12);
+      color: #65e89d;
+
+      border: 1px solid rgba(46, 204, 113, 0.25);
+    }
+
+    .error {
+      display: block !important;
+
+      background: rgba(231, 76, 60, 0.12);
+      color: #ff8174;
+
+      border: 1px solid rgba(231, 76, 60, 0.25);
+    }
+
+    #userArea {
+      display: none;
+    }
+
+    .username {
+      margin-bottom: 15px;
+      color: #c7c9d3;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <div class="logo">🏙️</div>
+
+    <h1>WitchTown Panel</h1>
+
+    <p class="subtitle">
+      Melde dich mit Discord an.<br>
+      Zugriff erhalten nur autorisierte Teammitglieder.
+    </p>
+
+    <div id="loginArea">
+
+      <button id="loginButton">
+        Mit Discord anmelden
+      </button>
+
+    </div>
+
+    <div id="userArea">
+
+      <div class="username" id="username"></div>
+
+      <button id="logoutButton">
+        Abmelden
+      </button>
+
+    </div>
+
+    <div id="status"></div>
+
+  </div>
+
+
+  <script>
+
+    // --------------------------------------------------
+    // SUPABASE
+    // --------------------------------------------------
+
+    const SUPABASE_URL =
+      "https://hpdhtwokqrfdficbgbqu.supabase.co";
+
+    /*
+      Hier gehört gleich dein Supabase Publishable Key hinein.
+      NIEMALS:
+      - Discord Bot Token
+      - Discord Client Secret
+      - Supabase Secret Key
+    */
+
+    const SUPABASE_KEY =
+      "DEIN_SUPABASE_PUBLISHABLE_KEY";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    // --------------------------------------------------
+    // ELEMENTE
+    // --------------------------------------------------
+
+    const loginArea =
+      document.getElementById("loginArea");
+
+    const userArea =
+      document.getElementById("userArea");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const logoutButton =
+      document.getElementById("logoutButton");
+
+    const username =
+      document.getElementById("username");
+
+    const statusBox =
+      document.getElementById("status");
+
+
+    // --------------------------------------------------
+    // STATUS
+    // --------------------------------------------------
+
+    function showStatus(message, type) {
+
+      statusBox.textContent = message;
+
+      statusBox.className = type;
+
+    }
+
+
+    // --------------------------------------------------
+    // DISCORD LOGIN
+    // --------------------------------------------------
+
+    loginButton.addEventListener(
+      "click",
+      async () => {
+
+        showStatus(
+          "Discord wird geöffnet ...",
+          "loading"
+        );
+
+        const { error } =
+          await supabaseClient.auth.signInWithOAuth({
+
+            provider: "discord",
+
+            options: {
+
+              redirectTo:
+                window.location.origin +
+                window.location.pathname
+
+            }
+
+          });
+
+
+        if (error) {
+
+          console.error(error);
+
+          showStatus(
+            "Discord Login konnte nicht gestartet werden.",
+            "error"
+          );
+
+        }
+
+      }
+    );
+
+
+    // --------------------------------------------------
+    // LOGOUT
+    // --------------------------------------------------
+
+    logoutButton.addEventListener(
+      "click",
+      async () => {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.reload();
+
+      }
+    );
+
+
+    // --------------------------------------------------
+    // ROLLE PRÜFEN
+    // --------------------------------------------------
+
+    async function checkDiscordRole(session) {
+
+      showStatus(
+        "WT Panel Rolle wird geprüft ...",
+        "loading"
+      );
+
+
+      try {
+
+        const response = await fetch(
+
+          SUPABASE_URL +
+          "/functions/v1/check-discord-role",
+
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Authorization":
+                "Bearer " +
+                session.access_token,
+
+              "Content-Type":
+                "application/json"
+
+            }
+
+          }
+
+        );
+
+
+        const result =
+          await response.json();
+
+
+        if (result.allowed === true) {
+
+          showStatus(
+            "✓ Zugriff erlaubt – WT Panel Rolle erkannt.",
+            "success"
+          );
+
+          /*
+            Später kommt hier unser richtiges
+            Dashboard hin.
+          */
+
+        }
+
+        else {
+
+          showStatus(
+            "✕ Zugriff verweigert – WT Panel Rolle fehlt.",
+            "error"
+          );
+
+        }
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        showStatus(
+          "Die Rollenprüfung konnte nicht durchgeführt werden.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    // --------------------------------------------------
+    // SESSION PRÜFEN
+    // --------------------------------------------------
+
+    async function initialize() {
+
+      const {
+        data: { session }
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (!session) {
+
+        loginArea.style.display =
+          "block";
+
+        userArea.style.display =
+          "none";
+
+        return;
+
+      }
+
+
+      loginArea.style.display =
+        "none";
+
+      userArea.style.display =
+        "block";
+
+
+      const user =
+        session.user;
+
+
+      username.textContent =
+        "Angemeldet als " +
+        (
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          user.email ||
+          "Discord Benutzer"
+        );
+
+
+      await checkDiscordRole(session);
+
+    }
+
+
+    // --------------------------------------------------
+    // START
+    // --------------------------------------------------
+
+    initialize();
+
+  </script>
+
+</body>
+</html>
